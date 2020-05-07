@@ -15,8 +15,21 @@ const fetchMyIP = function(callback) {
     // console.error('error:', error); // Print the error if one occurred
     // console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
     // console.log('body:', body); // Print the HTML for the Google homepage.
+
+  // inside the request callback ...
+  // error can be set if invalid domain, user is offline, etc.
+  if (error) {
+    return callback(error, null);
+  }
+  // if non-200 status, assume server error
+  if (response.statusCode !== 200) {
+    const msg = `Status Code ${response.statusCode} when fetching IP. Response: ${body}`;
+    callback(Error(msg), null);
+    return;
+  }
+  // if we get here, all's well and we got the data
     const data = JSON.parse(body);
-    error ? callback(error) : callback(null, data.ip);
+    callback(null, data.ip);
   });
 };
 
